@@ -161,7 +161,7 @@ begin
         -- Check for each register if it needs to be reset
         if (REG_RESET /= "") then
           for I in 0 to NUM_REGS-1 loop
-              if (REG_RESET(i) = 'Y') then
+              if (REG_RESET(REG_RESET'low + i) = 'Y') then
                 r.regs(i) <= (others => '0');
               end if;
           end loop;
@@ -223,7 +223,7 @@ begin
           o.bresp := RESP_OK;
           
           -- Write only if register is writeable
-          if (REG_CONFIG = "") or (REG_CONFIG(idx) = 'W') or (REG_CONFIG(idx) = 'B') then
+          if (REG_CONFIG = "") or (REG_CONFIG(REG_CONFIG'low + idx) = 'W') or (REG_CONFIG(REG_CONFIG'low + idx) = 'B') then
             v.regs(idx) := s_axi_wdata;
           else
             -- If not writable, generate a warning in simulation            
@@ -256,7 +256,7 @@ begin
         o.rresp := RESP_OK;
                 
         -- Check if register is readable
-        if (REG_CONFIG = "") or (REG_CONFIG(idx) = 'R') or (REG_CONFIG(idx) = 'B') then
+        if (REG_CONFIG = "") or (REG_CONFIG(REG_CONFIG'low + idx) = 'R') or (REG_CONFIG(REG_CONFIG'low + idx) = 'B') then
           o.rdata := r.regs(idx);
         else
           -- Respond with DEADBEEF if not readable
