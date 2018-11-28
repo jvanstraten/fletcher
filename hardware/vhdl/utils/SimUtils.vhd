@@ -531,7 +531,9 @@ package body SimUtils is
     variable index : natural;
   begin
     temp := unsigned(value);
-    if temp = 0 then
+    if is_X(value) then
+      return "?";
+    elsif temp = 0 then
       return "0";
     end if;
     index := SIM_STR_LEN;
@@ -562,7 +564,9 @@ package body SimUtils is
     variable temp : signed(value'length-1 downto 0);
   begin
     temp := signed(value);
-    if temp = 0 then
+    if is_X(value) then
+      return "?";
+    elsif temp = 0 then
       return "0";
     elsif temp > 0 then
       return sim_uint(std_logic_vector(temp));
