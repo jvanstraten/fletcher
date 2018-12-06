@@ -305,6 +305,8 @@ begin
   sim_proc: process is
     variable cyc  : natural;
   begin
+    wait for 1000 ns;
+    report "Minimum command length: " & integer'image(XX_CMD_LEN_MIN) severity note;
     wait until cmd_done;
     loop
       cyc := acc_cyc;
@@ -312,7 +314,6 @@ begin
       exit when acc_cyc = cyc;
     end loop;
     sim_done <= true;
-    report "Minimum command length: " & integer'image(XX_CMD_LEN_MIN) severity note;
     report "Bus utilization: " & integer'image(bus_util * 10000 / bus_cyc) & " / 10000" severity note;
     for i in acc_util'range loop
       report "Acc stream " & integer'image(i) & " utilization: " & integer'image(acc_util(i) * 10000 / acc_cyc) & " / 10000" severity note;
