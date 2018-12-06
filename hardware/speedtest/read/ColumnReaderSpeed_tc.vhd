@@ -314,9 +314,10 @@ begin
       exit when acc_cyc = cyc;
     end loop;
     sim_done <= true;
-    report "Bus utilization: " & integer'image(bus_util * 10000 / bus_cyc) & " / 10000" severity note;
+    cyc := work.utils.max(bus_cyc, acc_cyc);
+    report "Bus utilization: " & integer'image(integer(real(bus_util) * 10000.0 / real(cyc))) & " / 10000" severity note;
     for i in acc_util'range loop
-      report "Acc stream " & integer'image(i) & " utilization: " & integer'image(acc_util(i) * 10000 / acc_cyc) & " / 10000" severity note;
+      report "Acc stream " & integer'image(i) & " utilization: " & integer'image(integer(real(acc_util(i)) * 10000.0 / real(cyc))) & " / 10000" severity note;
     end loop;
     wait;
   end process;
