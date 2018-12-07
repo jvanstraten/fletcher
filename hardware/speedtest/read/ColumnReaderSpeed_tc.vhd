@@ -32,14 +32,14 @@ use work.Wrapper.all;
 entity ColumnReaderSpeed_tc is
   generic (
     XX_BUS_DATA_WIDTH           : natural := 512;
-    XX_BUS_BURST_STEP_LEN       : natural := 4;
+    XX_BUS_BURST_STEP_LEN       : natural := 1;
     XX_BUS_BURST_MAX_LEN        : natural := 16;
-    XX_CFG                      : string := "listprim(8;epc=64)";
-    XX_LIST_LEN_MIN             : natural := 10;
-    XX_LIST_LEN_MAX             : natural := 200;
-    XX_CMD_LEN_MIN              : natural := 50000;
+    XX_CFG                      : string := "listprim(8;epc=1)";
+    XX_LIST_LEN_MIN             : natural := 1;
+    XX_LIST_LEN_MAX             : natural := 1024;
+    XX_CMD_LEN_MIN              : natural := 1024;
     XX_CMD_LEN_MAX              : natural := 1000000;
-    XX_CMD_MAX_OUTSTANDING      : natural := 10;
+    XX_CMD_MAX_OUTSTANDING      : natural := 1;
     XX_CMD_COUNT                : natural := 1;
     XX_BUS_PERIOD               : time := 10 ns;
     XX_ACC_PERIOD               : time := 10 ns
@@ -207,7 +207,7 @@ begin
     end if;
   end process;
 
-  bus_proc: process (bus_clk) is
+  bus_proc: process (bus_clk, bus_rdat_ready, bus_rdat_valid) is
     function get_data(address: integer) return std_logic_vector is
       constant PERIOD_LEN   : integer := XX_LIST_LEN_MAX - XX_LIST_LEN_MIN + 1;
       variable words        : integer;
@@ -227,30 +227,21 @@ begin
       return std_logic_vector(to_unsigned(value, 32));
     end function;
 
-    variable req_valid      : std_logic;
-    variable req_ready      : std_logic;
     variable dat_valid      : std_logic;
-    variable dat_ready      : std_logic;
     variable remain         : integer := 0;
     variable address        : integer := 0;
     constant BUS_DATA_WORDS : natural := XX_BUS_DATA_WIDTH / 32;
   begin
     if rising_edge(bus_clk) then
-      req_valid := bus_rreq_valid;
-      dat_ready := bus_rdat_ready;
-
       bus_cyc_i <= bus_cyc_i + 1;
 
-      if dat_ready = '1' then
+      if bus_rdat_ready = '1' then
         dat_valid := '0';
       end if;
 
-      if dat_valid = '0' and remain = 0 and req_valid = '1' then
+      if bus_rreq_ready = '1' and bus_rreq_valid = '1' then
         address := to_integer(unsigned(bus_rreq_addr));
         remain  := to_integer(unsigned(bus_rreq_len));
-        req_ready := '1';
-      else
-        req_ready := '0';
       end if;
 
       if dat_valid = '0' and remain > 0 then
@@ -270,7 +261,6 @@ begin
       end if;
 
       if bus_reset = '1' then
-        req_ready := '0';
         dat_valid := '0';
         remain    := 0;
         address   := 0;
@@ -279,10 +269,16 @@ begin
         bus_util  <= 0;
       end if;
 
-      bus_rreq_ready <= req_ready;
       bus_rdat_valid <= dat_valid;
     end if;
+
+    if (bus_rdat_ready = '1' or bus_rdat_valid = '0') and remain = 0 then
+      bus_rreq_ready <= '1';
+    else
+      bus_rreq_ready <= '0';
+    end if;
   end process;
+
 
   acc_proc: process (acc_clk) is
   begin
