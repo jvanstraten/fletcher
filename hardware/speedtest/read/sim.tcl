@@ -257,16 +257,16 @@ add_source $::env(FLETCHER_HARDWARE_DIR)/vhdl/columns/ColumnReaderArb.vhd {-quie
 add_source $::env(FLETCHER_HARDWARE_DIR)/vhdl/columns/ColumnReader.vhd {-quiet -work work -2008}
 add_source $::env(FLETCHER_HARDWARE_DIR)/vhdl/wrapper/Wrapper.vhd {-quiet -work work -2008}
 add_source ColumnReaderSpeed_tc.vhd {-quiet -work work -2008}
-# simulate work columnreaderspeed_tc "100 ms" 10
-# simulate work columnreaderspeed_tc "100 ms" 20
-# simulate work columnreaderspeed_tc "100 ms" 50
-# simulate work columnreaderspeed_tc "100 ms" 100
+simulate work columnreaderspeed_tc "100 ms" 10
+simulate work columnreaderspeed_tc "100 ms" 20
+simulate work columnreaderspeed_tc "100 ms" 50
+simulate work columnreaderspeed_tc "100 ms" 100
 simulate work columnreaderspeed_tc "100 ms" 200
-# simulate work columnreaderspeed_tc "100 ms" 500
-# simulate work columnreaderspeed_tc "100 ms" 1000
-# simulate work columnreaderspeed_tc "100 ms" 2000
-# simulate work columnreaderspeed_tc "100 ms" 5000
-# simulate work columnreaderspeed_tc "100 ms" 10000
-# simulate work columnreaderspeed_tc "100 ms" 20000
-# simulate work columnreaderspeed_tc "100 ms" 50000
-# simulate work columnreaderspeed_tc "100 ms" 100000
+simulate work columnreaderspeed_tc "100 ms" 500
+simulate work columnreaderspeed_tc "100 ms" 1000
+simulate work columnreaderspeed_tc "100 ms" 2000
+simulate work columnreaderspeed_tc "100 ms" 5000
+simulate work columnreaderspeed_tc "100 ms" 10000
+simulate work columnreaderspeed_tc "100 ms" 20000
+simulate work columnreaderspeed_tc "100 ms" 50000
+simulate work columnreaderspeed_tc "100 ms" 100000

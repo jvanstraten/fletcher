@@ -36,7 +36,7 @@ entity ColumnWriterSpeed_tc is
     XX_BUS_BURST_MAX_LEN        : natural := 16;
     XX_ELEMENT_WIDTH            : natural := 8;
     XX_ELEMENT_COUNT            : natural := 64;
-    XX_LIST                     : boolean := true;
+    XX_LIST                     : boolean := false;
     XX_LIST_LEN_MIN             : natural := 10;
     XX_LIST_LEN_MAX             : natural := 200;
     XX_CMD_LEN_MIN              : natural := 50000;
@@ -277,7 +277,7 @@ begin
           in_last(0) <= '0';
         end if;
         if XX_LIST then
-          in_data(31 downto 0) <= std_logic_vector(to_unsigned(mst_len, 32));
+          in_data(work.utils.min(32, in_data'length)-1 downto 0) <= std_logic_vector(to_unsigned(mst_len, work.utils.min(32, in_data'length)));
           mst_len := mst_len + 1;
           if mst_len > XX_LIST_LEN_MAX then
             mst_len := XX_LIST_LEN_MIN;
@@ -296,7 +296,7 @@ begin
       in_valid(0) <= mst_valid;
 
       if XX_LIST then
-        if in_ready(1) = '1' then
+        if in_ready(in_ready'high) = '1' then
           el_valid := '0';
         end if;
 
@@ -305,16 +305,16 @@ begin
           el_epc := work.utils.min(el_list_len - el_idx, XX_ELEMENT_COUNT);
           el_idx := el_idx + el_epc;
           if el_idx = el_list_len then
-            in_last(1) <= '1';
+            in_last(in_last'high) <= '1';
           else
-            in_last(1) <= '0';
+            in_last(in_last'high) <= '0';
           end if;
           in_data(in_data'high downto in_data'high - log2ceil(XX_ELEMENT_COUNT+1) + 1)
             <= std_logic_vector(to_unsigned(el_epc, log2ceil(XX_ELEMENT_COUNT+1)));
           if el_epc = 0 then
-            in_dvalid(1) <= '0';
+            in_dvalid(in_dvalid'high) <= '0';
           else
-            in_dvalid(1) <= '1';
+            in_dvalid(in_dvalid'high) <= '1';
           end if;
 
           if el_idx = el_list_len then
@@ -344,7 +344,7 @@ begin
           el_idx := 0;
         end if;
 
-        in_valid(1) <= el_valid;
+        in_valid(in_valid'high) <= el_valid;
 
       end if;
 
